@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Info, Layers, Network, ExternalLink } from 'lucide-react';
+import { Info, ExternalLink } from 'lucide-react';
 import {
   LAYERS,
   EDGES,
@@ -10,9 +10,6 @@ import {
   type LayerDef,
 } from './diagram-data';
 import { DiagramDetailPanel } from './DiagramDetailPanel';
-import { HubSpokeView } from './HubSpokeView';
-
-type ViewMode = 'layered' | 'hub-spoke';
 
 interface RenderedPath {
   d: string;
@@ -44,83 +41,6 @@ function getBezierPath(x1: number, y1: number, x2: number, y2: number): string {
   const dy = y2 - y1;
   const cp = Math.max(Math.abs(dy) * 0.55, 40);
   return `M ${x1.toFixed(1)} ${y1.toFixed(1)} C ${x1.toFixed(1)} ${(y1 + cp).toFixed(1)}, ${x2.toFixed(1)} ${(y2 - cp).toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}`;
-}
-
-// ─── View Toggle ──────────────────────────────────────────────────────────────
-
-interface ViewToggleProps {
-  viewMode: ViewMode;
-  onChange: (v: ViewMode) => void;
-}
-
-function ViewToggle({ viewMode, onChange }: ViewToggleProps) {
-  const handleKeyDown = (id: ViewMode) => (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onChange(id);
-    }
-  };
-
-  return (
-    <div
-      role="tablist"
-      aria-label="Diagram view mode"
-      style={{
-        display: 'flex',
-        background: 'var(--nd-secondary)',
-        border: '1px solid var(--nd-border)',
-        borderRadius: 'var(--nd-radius)',
-        padding: '3px',
-        gap: '2px',
-      }}
-    >
-      {(
-        [
-          { id: 'layered', Icon: Layers, label: 'Layered' },
-          { id: 'hub-spoke', Icon: Network, label: 'Hub & Spoke' },
-        ] as const
-      ).map(({ id, Icon, label }) => {
-        const isActive = viewMode === id;
-        return (
-          <button
-            key={id}
-            role="tab"
-            aria-selected={isActive}
-            aria-label={`${label} view`}
-            tabIndex={isActive ? 0 : -1}
-            onClick={() => onChange(id)}
-            onKeyDown={handleKeyDown(id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
-              borderRadius: 'calc(var(--nd-radius) - 2px)',
-              border: 'none',
-              cursor: 'pointer',
-              background: isActive ? 'var(--nd-background)' : 'transparent',
-              color: isActive ? 'var(--nd-foreground)' : 'var(--nd-muted-foreground)',
-              boxShadow: isActive ? 'var(--nd-elevation-sm)' : 'none',
-              transition: 'all 0.15s',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <Icon size={14} style={{ flexShrink: 0 }} />
-            <span
-              style={{
-                cursor: 'pointer',
-                color: 'inherit',
-                fontWeight: isActive ? 'var(--nd-font-weight-medium)' : 'var(--nd-font-weight-normal)',
-                fontSize: 'var(--nd-text-sm)',
-              }}
-            >
-              {label}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
 }
 
 // ─── Layered View ─────────────────────────────────────────────────────────────
@@ -485,17 +405,11 @@ function LayeredView({ selectedId, onSelectId, containerWidth }: LayeredViewProp
 // ─── Root Component ───────────────────────────────────────────────────────────
 
 export function AgentDiagram() {
-  const [viewMode, setViewMode] = useState<ViewMode>('layered');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth, height: containerHeight } = useContainerSize(rootRef);
   const isMobile = containerWidth < 768;
   const isTablet = containerWidth >= 768 && containerWidth < 1024;
-
-  const handleViewChange = (v: ViewMode) => {
-    setSelectedId(null);
-    setViewMode(v);
-  };
 
   return (
     <div
@@ -531,9 +445,7 @@ export function AgentDiagram() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Info size={13} style={{ color: 'var(--nd-muted-foreground)', flexShrink: 0 }} />
             <p style={{ margin: 0, color: 'var(--nd-muted-foreground)', fontSize: 'var(--nd-text-sm)' }}>
-              {viewMode === 'layered'
-                ? 'Tap a node to highlight its connections across layers'
-                : 'Tap a node on the ring to explore its connections'}
+              Tap a node to highlight its connections across layers
             </p>
           </div>
         </div>
@@ -556,8 +468,6 @@ export function AgentDiagram() {
             </div>
           ))}
         </div>
-
-        <ViewToggle viewMode={viewMode} onChange={handleViewChange} />
 
         {/* CTA banner */}
         <a
@@ -588,31 +498,7 @@ export function AgentDiagram() {
         }}
       >
         <div style={{ flex: isMobile ? undefined : 1, display: isMobile ? 'block' : 'flex', overflow: isMobile ? 'visible' : 'hidden' }}>
-          <AnimatePresence mode="wait">
-            {viewMode === 'layered' ? (
-              <motion.div
-                key="layered"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18 }}
-                style={{ flex: isMobile ? undefined : 1, display: isMobile ? 'block' : 'flex', overflow: isMobile ? 'visible' : 'hidden' }}
-              >
-                <LayeredView selectedId={selectedId} onSelectId={setSelectedId} containerWidth={containerWidth} />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="hub-spoke"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18 }}
-                style={{ flex: isMobile ? undefined : 1, display: isMobile ? 'block' : 'flex', overflow: isMobile ? 'visible' : 'hidden' }}
-              >
-                <HubSpokeView selectedId={selectedId} onSelectId={setSelectedId} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <LayeredView selectedId={selectedId} onSelectId={setSelectedId} containerWidth={containerWidth} />
         </div>
 
         {/* Desktop sidebar -- inside flex flow */}
