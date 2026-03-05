@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Info, ExternalLink } from 'lucide-react';
 import {
   LAYERS,
   EDGES,
   findLayerForNode,
+  findNodeById,
   getConnectedIds,
   isCrossLayerEdge,
   type LayerDef,
@@ -57,9 +58,11 @@ function LayeredView({ selectedId, onSelectId, containerWidth }: LayeredViewProp
   const nodeRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [paths, setPaths] = useState<RenderedPath[]>([]);
   const [svgSize, setSvgSize] = useState({ w: 0, h: 0 });
+  const prefersReducedMotion = useReducedMotion();
 
   const connectedIds = getConnectedIds(selectedId);
   const isMobile = containerWidth < 768;
+  const noMotion = { duration: 0 };
 
   const recalculate = useCallback(() => {
     const container = containerRef.current;
@@ -134,6 +137,8 @@ function LayeredView({ selectedId, onSelectId, containerWidth }: LayeredViewProp
     <div
       ref={containerRef}
       className="nd-layered-container"
+      role="region"
+      aria-label="AI architecture diagram — layered view"
       style={{
         flex: isMobile ? undefined : 1,
         overflowY: isMobile ? 'visible' : 'auto',
@@ -143,6 +148,8 @@ function LayeredView({ selectedId, onSelectId, containerWidth }: LayeredViewProp
     >
       {selectedId && (
         <svg
+          role="img"
+          aria-label={`Showing ${paths.length} connection${paths.length !== 1 ? 's' : ''} from ${findNodeById(selectedId)?.label ?? 'selected node'} to other concepts`}
           style={{
             position: 'absolute',
             top: 0,
@@ -286,8 +293,9 @@ function LayeredView({ selectedId, onSelectId, containerWidth }: LayeredViewProp
                         nodeRefs.current[node.id] = el;
                       }}
                       role="button"
-                      tabIndex={0}
+                      tabIndex={isDimmed ? -1 : 0}
                       aria-pressed={isSelected}
+                      aria-hidden={isDimmed || undefined}
                       aria-label={`${node.label} — ${layer.label} layer`}
                       className="nd-node-chip"
                       onClick={() => onSelectId(node.id === selectedId ? null : node.id)}
@@ -295,10 +303,10 @@ function LayeredView({ selectedId, onSelectId, containerWidth }: LayeredViewProp
                       onMouseEnter={() => setHoveredId(node.id)}
                       onMouseLeave={() => setHoveredId(null)}
                       animate={{
-                        opacity: isDimmed ? 0.3 : 1,
+                        opacity: isDimmed ? 0.35 : 1,
                         scale: isSelected ? 1.03 : 1,
                       }}
-                      transition={{ duration: 0.15 }}
+                      transition={prefersReducedMotion ? noMotion : { duration: 0.15 }}
                       style={{
                         cursor: 'pointer',
                         borderRadius: 'var(--nd-radius-card)',
@@ -306,7 +314,7 @@ function LayeredView({ selectedId, onSelectId, containerWidth }: LayeredViewProp
                         minWidth: isMobile ? '110px' : '140px',
                         maxWidth: isMobile ? '180px' : '220px',
                         userSelect: 'none',
-                        outline: 'none',
+                        outline: 'revert',
                         background: isSelected
                           ? `${layer.hexColor}1A`
                           : isConnected
@@ -408,6 +416,7 @@ export function AgentDiagram() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const { width: containerWidth, height: containerHeight } = useContainerSize(rootRef);
+  const prefersReducedMotion = useReducedMotion();
   const isMobile = containerWidth < 768;
   const isTablet = containerWidth >= 768 && containerWidth < 1024;
 
@@ -428,7 +437,7 @@ export function AgentDiagram() {
       }}
     >
       {/* Header */}
-      <div
+      <header
         className="nd-header"
         style={{
           flexShrink: 0,
@@ -487,10 +496,11 @@ export function AgentDiagram() {
               : 'Need help building AI into your team\u2019s workflows?'}
           </span>
           <span className="nd-cta-banner-link">
-            Contact us <ExternalLink size={12} style={{ flexShrink: 0 }} />
+            Contact us <ExternalLink size={12} style={{ flexShrink: 0 }} aria-hidden="true" />
+            <span className="nd-sr-only">(opens in a new tab)</span>
           </span>
         </a>
-      </div>
+      </header>
 
       {/* Body -- on mobile the diagram always takes full space; panel is overlaid */}
       <div
@@ -531,10 +541,12 @@ export function AgentDiagram() {
       <AnimatePresence>
         {!selectedId && (
           <motion.div
+            role="status"
+            aria-live="polite"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
             style={{
               position: isMobile ? 'sticky' : 'absolute',
               bottom: '24px',

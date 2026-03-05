@@ -118,6 +118,40 @@
   line-height: 1.5;
 }
 
+/* ─── Focus-visible indicators (WCAG 2.4.7) ──────────────────── */
+
+.nodaste-diagram *:focus {
+  outline: none;
+}
+
+.nodaste-diagram *:focus-visible {
+  outline: 2px solid var(--nd-ring);
+  outline-offset: 2px;
+  border-radius: var(--nd-radius);
+}
+
+.nodaste-diagram .nd-node-chip:focus-visible {
+  outline: 2px solid var(--nd-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(249, 110, 91, 0.25), var(--nd-elevation-md);
+}
+
+.nodaste-diagram .nd-mobile-fab:focus-visible {
+  outline: 2px solid var(--nd-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(249, 110, 91, 0.25), 0 6px 24px rgba(249, 110, 91, 0.35);
+}
+
+.nodaste-diagram .nd-cta-banner:focus-visible {
+  outline: 2px solid var(--nd-ring);
+  outline-offset: 2px;
+}
+
+.nodaste-diagram .nd-resource-link:focus-visible {
+  outline: 2px solid var(--nd-ring);
+  outline-offset: 1px;
+}
+
 /* SVG animation keyframes */
 @keyframes nd-marchPath {
   to { stroke-dashoffset: -12; }
@@ -321,4 +355,34 @@
   font-size: var(--nd-text-sm);
   color: var(--nd-foreground);
   white-space: nowrap;
+}
+
+/* ─── Reduced-motion preferences (WCAG 2.3.3) ─────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .nodaste-diagram .nd-flow-line,
+  .nodaste-diagram .nd-spoke-line {
+    animation: none !important;
+  }
+
+  .nodaste-diagram *,
+  .nodaste-diagram *::before,
+  .nodaste-diagram *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Visually hidden utility (screen reader only) ─────────────── */
+
+.nodaste-diagram .nd-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

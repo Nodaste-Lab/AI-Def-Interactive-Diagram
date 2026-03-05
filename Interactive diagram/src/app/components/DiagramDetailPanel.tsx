@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { X, ArrowRight, ArrowLeft, AlertTriangle, Lightbulb, ExternalLink, Zap, ChevronRight } from 'lucide-react';
 import {
   EDGES,
@@ -131,20 +131,21 @@ function PanelContent({
       {outgoingEdges.length > 0 && (
         <div>
           <SectionLabel>Connects to</SectionLabel>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+          <div role="list" aria-label="Outgoing connections" style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
             {outgoingEdges.map((edge) => {
               const targetNode = findNodeById(edge.to);
               const targetLayer = findLayerForNode(edge.to);
               if (!targetNode) return null;
               return (
-                <ConnectionCard
-                  key={edge.to}
-                  node={targetNode}
-                  layer={targetLayer}
-                  relationLabel={edge.label}
-                  direction="out"
-                  onClick={() => onSelectId(edge.to)}
-                />
+                <div role="listitem" key={edge.to}>
+                  <ConnectionCard
+                    node={targetNode}
+                    layer={targetLayer}
+                    relationLabel={edge.label}
+                    direction="out"
+                    onClick={() => onSelectId(edge.to)}
+                  />
+                </div>
               );
             })}
           </div>
@@ -155,20 +156,21 @@ function PanelContent({
       {incomingEdges.length > 0 && (
         <div>
           <SectionLabel>Receives from</SectionLabel>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+          <div role="list" aria-label="Incoming connections" style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
             {incomingEdges.map((edge) => {
               const sourceNode = findNodeById(edge.from);
               const sourceLayer = findLayerForNode(edge.from);
               if (!sourceNode) return null;
               return (
-                <ConnectionCard
-                  key={edge.from}
-                  node={sourceNode}
-                  layer={sourceLayer}
-                  relationLabel={edge.label}
-                  direction="in"
-                  onClick={() => onSelectId(edge.from)}
-                />
+                <div role="listitem" key={edge.from}>
+                  <ConnectionCard
+                    node={sourceNode}
+                    layer={sourceLayer}
+                    relationLabel={edge.label}
+                    direction="in"
+                    onClick={() => onSelectId(edge.from)}
+                  />
+                </div>
               );
             })}
           </div>
@@ -188,8 +190,9 @@ function PanelContent({
                 rel="noopener noreferrer"
                 className="nd-resource-link"
               >
-                <ExternalLink size={13} style={{ flexShrink: 0, opacity: 0.7 }} />
+                <ExternalLink size={13} style={{ flexShrink: 0, opacity: 0.7 }} aria-hidden="true" />
                 <span style={{ fontSize: 'var(--nd-text-sm)' }}>{res.label}</span>
+                <span className="nd-sr-only">(opens in a new tab)</span>
               </a>
             ))}
           </div>
@@ -201,15 +204,11 @@ function PanelContent({
 
 // ─── Panel header (shared) ───────────────────────────────────────────────────
 
-function PanelHeader({
-  selectedNode,
-  selectedLayer,
-  onClose,
-}: {
+const PanelHeader = React.forwardRef<HTMLButtonElement, {
   selectedNode: NodeDef;
   selectedLayer: LayerDef;
   onClose: () => void;
-}) {
+}>(function PanelHeader({ selectedNode, selectedLayer, onClose }, ref) {
   return (
     <div
       style={{
@@ -261,6 +260,7 @@ function PanelHeader({
         </div>
 
         <button
+          ref={ref}
           onClick={onClose}
           aria-label="Close detail panel"
           style={{
@@ -272,7 +272,8 @@ function PanelHeader({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '4px',
+            minWidth: '44px',
+            minHeight: '44px',
             flexShrink: 0,
           }}
         >
@@ -285,7 +286,7 @@ function PanelHeader({
       </h3>
     </div>
   );
-}
+});
 
 // ─── Desktop sidebar ─────────────────────────────────────────────────────────
 
@@ -298,16 +299,18 @@ function DesktopSidebar({
   selectedLayer: LayerDef;
   onSelectId: (id: string | null) => void;
 }) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <motion.div
       key="panel"
+      role="region"
       aria-live="polite"
       aria-label={`Details for ${selectedNode.label}`}
       className="nd-detail-panel"
-      initial={{ x: 320, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 320, opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      initial={prefersReducedMotion ? { opacity: 0 } : { x: 320, opacity: 0 }}
+      animate={prefersReducedMotion ? { opacity: 1 } : { x: 0, opacity: 1 }}
+      exit={prefersReducedMotion ? { opacity: 0 } : { x: 320, opacity: 0 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 30 }}
       style={{
         width: '320px',
         flexShrink: 0,
@@ -343,13 +346,14 @@ function MobileInfoFab({
   selectedLayer: LayerDef;
   onOpen: () => void;
 }) {
+  const prefersReducedMotion = useReducedMotion();
   return (
     <motion.button
       className="nd-mobile-fab"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
       onClick={onOpen}
       aria-label={`Learn more about ${selectedNode.label}`}
     >
@@ -383,6 +387,45 @@ function MobileDetailModal({
   onSelectId: (id: string | null) => void;
   onClose: () => void;
 }) {
+  const prefersReducedMotion = useReducedMotion();
+  const modalRef = React.useRef<HTMLDivElement>(null);
+  const closeButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  React.useEffect(() => {
+    closeButtonRef.current?.focus();
+  }, []);
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (e.key !== 'Tab' || !modalRef.current) return;
+
+      const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
     <>
       <motion.div
@@ -390,21 +433,25 @@ function MobileDetailModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
+        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
         onClick={onClose}
+        aria-hidden="true"
       />
 
       <motion.div
+        ref={modalRef}
         className="nd-mobile-modal"
-        aria-live="polite"
+        role="dialog"
+        aria-modal="true"
         aria-label={`Details for ${selectedNode.label}`}
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ type: 'spring', stiffness: 340, damping: 34 }}
+        initial={prefersReducedMotion ? { opacity: 0 } : { y: '100%' }}
+        animate={prefersReducedMotion ? { opacity: 1 } : { y: 0 }}
+        exit={prefersReducedMotion ? { opacity: 0 } : { y: '100%' }}
+        transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 340, damping: 34 }}
       >
         <div className="nd-mobile-modal-content">
           <PanelHeader
+            ref={closeButtonRef}
             selectedNode={selectedNode}
             selectedLayer={selectedLayer}
             onClose={onClose}
