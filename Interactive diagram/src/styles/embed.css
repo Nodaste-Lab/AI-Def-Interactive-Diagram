@@ -1,0 +1,324 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+.nodaste-diagram {
+  /* Typography */
+  --nd-text-2xl: 72px;
+  --nd-text-xl: 48px;
+  --nd-text-lg: 24px;
+  --nd-text-base: 16px;
+  --nd-text-sm: 14px;
+  --nd-text-xs: 20px;
+
+  /* Colors */
+  --nd-background: rgba(45, 42, 110, 1.00);
+  --nd-foreground: rgba(244, 233, 220, 1.00);
+  --nd-card: rgba(45, 42, 110, 1.00);
+  --nd-card-foreground: rgba(244, 233, 220, 1.00);
+  --nd-primary: rgba(249, 110, 91, 1.00);
+  --nd-primary-foreground: rgba(5, 2, 16, 1.00);
+  --nd-secondary: rgba(29, 28, 42, 1.00);
+  --nd-secondary-foreground: rgba(244, 233, 220, 1.00);
+  --nd-muted: rgba(198, 197, 212, 1.00);
+  --nd-muted-foreground: rgba(244, 233, 220, 0.85);
+  --nd-accent: rgba(249, 110, 91, 1.00);
+  --nd-accent-foreground: rgba(5, 2, 16, 1.00);
+  --nd-border: rgba(244, 233, 220, 0.70);
+
+  /* Weights */
+  --nd-font-weight-medium: 600;
+  --nd-font-weight-normal: 400;
+
+  /* Focus ring */
+  --nd-ring: rgba(249, 110, 91, 1.00);
+
+  /* Elevation */
+  --nd-elevation-sm: 0px 4px 4px -4px rgba(5, 2, 16, 0.05), 0px 1px 4px 0px rgba(5, 2, 16, 0.1);
+  --nd-elevation-md: 0px 16px 32px -4px rgba(5, 2, 16, 0.1), 0px 4px 4px -4px rgba(5, 2, 16, 0.05);
+
+  /* Chart / layer colors */
+  --nd-chart-1: rgba(249, 110, 91, 1.00);
+  --nd-chart-2: rgba(89, 83, 191, 1.00);
+  --nd-chart-3: rgba(0, 181, 165, 1.00);
+  --nd-chart-4: rgba(120, 110, 202, 1.00);
+  --nd-chart-5: rgba(64, 61, 154, 1.00);
+
+  /* Difficulty tag colors */
+  --nd-difficulty-beginner: rgba(72, 187, 120, 1.00);
+  --nd-difficulty-intermediate: rgba(236, 178, 46, 1.00);
+  --nd-difficulty-advanced: rgba(239, 100, 97, 1.00);
+
+  /* Radii */
+  --nd-radius: 8px;
+  --nd-radius-button: 8px;
+  --nd-radius-card: 8px;
+  --nd-radius-input: 8px;
+
+  /* Base styles for the container */
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: var(--nd-font-weight-normal);
+  line-height: 1.5;
+  color: var(--nd-foreground);
+  background: var(--nd-background);
+  box-sizing: border-box;
+}
+
+.nodaste-diagram *,
+.nodaste-diagram *::before,
+.nodaste-diagram *::after {
+  box-sizing: border-box;
+}
+
+.nodaste-diagram h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--nd-text-xl);
+  font-weight: var(--nd-font-weight-medium);
+  line-height: 1.5;
+}
+
+.nodaste-diagram h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--nd-text-lg);
+  font-weight: var(--nd-font-weight-medium);
+  line-height: 1.5;
+}
+
+.nodaste-diagram h4 {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--nd-text-xs);
+  font-weight: var(--nd-font-weight-normal);
+  line-height: 1.5;
+}
+
+.nodaste-diagram p {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--nd-text-base);
+  font-weight: var(--nd-font-weight-normal);
+  line-height: 1.5;
+}
+
+.nodaste-diagram span {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--nd-text-base);
+  font-weight: var(--nd-font-weight-normal);
+  line-height: 1.5;
+}
+
+.nodaste-diagram label {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--nd-text-sm);
+  font-weight: var(--nd-font-weight-normal);
+  line-height: 1.5;
+}
+
+.nodaste-diagram button {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--nd-text-base);
+  font-weight: var(--nd-font-weight-medium);
+  line-height: 1.5;
+}
+
+/* SVG animation keyframes */
+@keyframes nd-marchPath {
+  to { stroke-dashoffset: -12; }
+}
+
+@keyframes nd-marchSpoke {
+  to { stroke-dashoffset: -11; }
+}
+
+.nodaste-diagram .nd-flow-line {
+  stroke-dasharray: 7 4;
+  animation: nd-marchPath 0.7s linear infinite;
+}
+
+.nodaste-diagram .nd-spoke-line {
+  animation: nd-marchSpoke 0.7s linear infinite;
+}
+
+/* ─── Mobile floating info button ──────────────────────────────── */
+
+.nodaste-diagram .nd-mobile-fab {
+  position: sticky;
+  bottom: 20px;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 999px;
+  background: var(--nd-primary);
+  color: var(--nd-primary-foreground);
+  font-family: 'Inter', sans-serif;
+  font-size: var(--nd-text-sm);
+  font-weight: var(--nd-font-weight-medium);
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(249, 110, 91, 0.35), var(--nd-elevation-md);
+  white-space: nowrap;
+  max-width: calc(100% - 40px);
+}
+
+.nodaste-diagram .nd-mobile-fab:active {
+  filter: brightness(0.92);
+}
+
+/* ─── Mobile detail modal overlay ──────────────────────────────── */
+
+.nodaste-diagram .nd-mobile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 2, 16, 0.5);
+  z-index: 90;
+}
+
+.nodaste-diagram .nd-mobile-modal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 75vh;
+  z-index: 100;
+  background: var(--nd-secondary);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -8px 32px rgba(5, 2, 16, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+.nodaste-diagram .nd-mobile-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ─── CTA banner ───────────────────────────────────────────────── */
+
+.nodaste-diagram .nd-cta-banner {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--nd-radius);
+  background: rgba(249, 110, 91, 0.08);
+  border: 1px solid rgba(249, 110, 91, 0.22);
+  color: var(--nd-foreground);
+  font-size: var(--nd-text-sm);
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+  cursor: pointer;
+  flex-wrap: wrap;
+}
+
+.nodaste-diagram .nd-cta-banner:hover {
+  background: rgba(249, 110, 91, 0.14);
+  border-color: rgba(249, 110, 91, 0.4);
+}
+
+.nodaste-diagram .nd-cta-banner-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--nd-primary);
+  font-weight: var(--nd-font-weight-medium);
+  white-space: nowrap;
+}
+
+/* ─── Difficulty tags ───────────────────────────────────────────── */
+
+.nodaste-diagram .nd-difficulty-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: var(--nd-text-sm);
+  font-weight: var(--nd-font-weight-medium);
+  line-height: 1.4;
+}
+
+.nodaste-diagram .nd-difficulty-tag[data-level="beginner"] {
+  background: rgba(72, 187, 120, 0.15);
+  color: var(--nd-difficulty-beginner);
+  border: 1px solid rgba(72, 187, 120, 0.35);
+}
+
+.nodaste-diagram .nd-difficulty-tag[data-level="intermediate"] {
+  background: rgba(236, 178, 46, 0.15);
+  color: var(--nd-difficulty-intermediate);
+  border: 1px solid rgba(236, 178, 46, 0.35);
+}
+
+.nodaste-diagram .nd-difficulty-tag[data-level="advanced"] {
+  background: rgba(239, 100, 97, 0.15);
+  color: var(--nd-difficulty-advanced);
+  border: 1px solid rgba(239, 100, 97, 0.35);
+}
+
+/* ─── Why-it-matters highlight ──────────────────────────────────── */
+
+.nodaste-diagram .nd-why-it-matters {
+  background: rgba(249, 110, 91, 0.08);
+  border-left: 3px solid var(--nd-primary);
+  border-radius: 0 var(--nd-radius) var(--nd-radius) 0;
+  padding: 12px 14px;
+}
+
+/* ─── Misconception callout ─────────────────────────────────────── */
+
+.nodaste-diagram .nd-misconception {
+  background: rgba(236, 178, 46, 0.08);
+  border: 1px solid rgba(236, 178, 46, 0.25);
+  border-radius: var(--nd-radius);
+  padding: 12px 14px;
+}
+
+/* ─── Getting started tip ───────────────────────────────────────── */
+
+.nodaste-diagram .nd-getting-started {
+  background: rgba(0, 181, 165, 0.08);
+  border: 1px solid rgba(0, 181, 165, 0.25);
+  border-radius: var(--nd-radius);
+  padding: 12px 14px;
+}
+
+/* ─── Resource links ────────────────────────────────────────────── */
+
+.nodaste-diagram .nd-resource-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--nd-radius);
+  border: 1px solid var(--nd-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--nd-foreground);
+  text-decoration: none;
+  font-size: var(--nd-text-sm);
+  transition: background 0.12s;
+  cursor: pointer;
+}
+
+.nodaste-diagram .nd-resource-link:hover {
+  background: var(--nd-background);
+}
+
+/* ─── Example chips ─────────────────────────────────────────────── */
+
+.nodaste-diagram .nd-example-chip {
+  display: inline-block;
+  background: var(--nd-background);
+  border: 1px solid var(--nd-border);
+  border-radius: var(--nd-radius);
+  padding: 2px 10px;
+  font-size: var(--nd-text-sm);
+  color: var(--nd-foreground);
+  white-space: nowrap;
+}
