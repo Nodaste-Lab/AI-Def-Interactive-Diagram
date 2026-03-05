@@ -98,7 +98,7 @@ export const LAYERS: LayerDef[] = [
     intro:
       'Experiences are the reusable AI-powered products that people actually build and share. They sit between the raw interface layer and the orchestration machinery, packaging instructions, tools, and personas into something that can be deployed repeatedly. This is where "using AI" becomes "building with AI."',
     cssColor: 'var(--nd-chart-2)',
-    hexColor: '#5953BF',
+    hexColor: '#58ADB8',
     nodes: [
       {
         id: 'custom-assistants',
@@ -157,7 +157,7 @@ export const LAYERS: LayerDef[] = [
     intro:
       'Orchestration is the control plane of an AI system. It determines how requests get routed, how agents plan and execute multi-step tasks, which tools get called, and how quality and safety are maintained. Understanding this layer is essential for building AI systems that are reliable, safe, and capable of complex work.',
     cssColor: 'var(--nd-chart-3)',
-    hexColor: '#00B5A5',
+    hexColor: '#8BD4F4',
     nodes: [
       {
         id: 'agents',
