@@ -442,6 +442,11 @@ export function AgentDiagram() {
       >
         <div className="nd-header-title" style={{ flex: isMobile || isTablet ? '1 1 100%' : '1', minWidth: 0 }}>
           <h2 style={{ marginBottom: '4px', fontSize: isMobile ? '28px' : undefined }}>Agent Architecture</h2>
+          <p style={{ margin: '0 0 8px', color: 'var(--nd-muted-foreground)', fontSize: 'var(--nd-text-sm)', lineHeight: 1.6 }}>
+            {isMobile
+              ? 'Explore how the building blocks of AI connect and work together. Tap any concept to learn what it does and why it matters.'
+              : 'AI has a lot of moving parts. Explore how the building blocks\u2009—\u2009from models and data retrieval to agents and interfaces\u2009—\u2009connect and work together. Select any concept to learn what it does, why it matters, and how to get started.'}
+          </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Info size={13} style={{ color: 'var(--nd-muted-foreground)', flexShrink: 0 }} />
             <p style={{ margin: 0, color: 'var(--nd-muted-foreground)', fontSize: 'var(--nd-text-sm)' }}>
