@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output (source of truth is rebuilt from src/)
+Interactive diagram/dist/
+Interactive diagram/deploy/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.cursor/
+.vscode/
+
+# Archives
+*.zip
+
+# Logs
+*.log
